@@ -1,8 +1,8 @@
 <meta charset="utf-8">
 
-<body onload="tick()" onmousedown="pause()">
+<body onload="tick()">
     <p id="scorec">Score: 0</p>
-    <button onclick="pause()">Pause/Start</button> <br>
+    <button onclick="pause()" class="__nofocus" tabindex="-1">Pause/Start</button> <br>
     <canvas id="canvas" style="border: 2px solid black;"></canvas>
     <img id="katona" width="38" height="60" src="minikatona.png" style="display: none;">
     <img id="bullet" width="20" height="29" src="minibullet.png" style="display: none;">
@@ -16,6 +16,13 @@
 
 
 <script>
+
+    document.body.addEventListener('focusin', (e) => {
+        if (e.target.classList.contains('__nofocus')) {
+            e.relatedTarget ? e.relatedTarget.focus() : e.target.blur();
+        }
+    });
+
     var paused = true
     const ttime = 1000/60
     var bullets = []
