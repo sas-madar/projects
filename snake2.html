@@ -1,0 +1,514 @@
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" charset="utf-8">
+<body id="by">
+<div id="all">
+<button id="toggleFS" onclick="tFS()">Fullscreen</button>
+<h2 id="msg"></h2>
+<p id="state1">Paused: true</p>
+<p id="state2">Can die: false</p>
+<p id="state3">Can win: true</p>
+<p id="counter">Length: 3</p>
+<button onclick="pause()">Start/Pause</button><br>
+<canvas id="canvas"></canvas><br>
+
+<div id="devtools">
+<button onclick="hcolor()">Enable/Disable snake head color</button>
+<button onclick="candie()">Enable/Disable death</button>
+<button onclick="cwin()">Enable/Disable win</button><br>
+<input id="c1" placeholder="rows/columns (default 10)" type="number">
+<input id="c2" placeholder="cube side (default 30)" type="number"><br>
+<input id="c3" placeholder="fps (100 max , default 5)" type="number">
+<input id="c4" placeholder="foodcount (default 3)" type="number"><br>
+<button onclick="set()">Restart with given values</button>
+</div>
+<p id="wincond">You win when the length of the snake is at least half of the squares you can land on.</p>
+<div id="swipe"><p id="smsg">Swipe here for mobile control.</p></div>
+</div>
+
+</body>
+
+<style>
+@media screen and (max-width: 1290px) {
+    button{
+        width: 25vw;
+        height: 5vh;
+        margin: 0;
+    }
+    input{
+        width: 38vw;
+        height: 4vh;
+    }
+    #swipe{
+        height: 40vh;
+        width: 90vw;
+        background-color: black;
+    }
+    #smsg{
+        color: white;
+    }
+    #wincond{
+        max-width: 80vw;
+    }
+    body {
+        overscroll-behavior: contain;
+        background-color: white;
+    }
+
+
+}
+@media screen and (min-width: 1290px) {
+    #swipe{
+        display: none;
+    }
+    #toggleFS{
+        display: none;
+    }
+}
+
+
+canvas{
+    border: 2px solid rgba(0,0,0,1);
+    background-color: rgba(255,255,255, 1);
+    margin: 0px;
+}
+#state1{margin: 0;}
+#state2{margin: 0;}
+#state3{margin: 0;}
+</style>
+
+
+<script>
+var canwin = true
+var cdie = false
+var headcolor = false
+var side = 30
+var offset = 10
+var paused = true
+var snake = [[0,0],[1,0],[2,0]]
+var length = 3
+var head = length-1
+var dir = "right"
+var dirbef = ""
+var foods = []
+var foodcount = 3
+var ftry = 0
+var fps = 5
+var delay = ( function() {
+    var timer = 0;
+    return function(callback, ms) {
+        clearTimeout (timer);
+        timer = setTimeout(callback, ms);
+    };
+})();
+var msgdelay = ( function() {
+    var timer = 0;
+    return function(callback, ms) {
+        clearTimeout (timer);
+        timer = setTimeout(callback, ms);
+    };
+})();
+
+var canvas = document.getElementById("canvas")
+var ctx = canvas.getContext("2d")
+canvas.height = side*offset
+canvas.width = side*offset
+draw()
+
+var ss = []
+var se = []
+const mcontrol = document.getElementById("swipe")
+// swipe for black area
+mcontrol.addEventListener("touchstart", e =>{
+    [...e.changedTouches].forEach( touch =>{
+        ss[0] = touch.pageX
+        ss[1] = touch.pageY
+    })
+})
+
+mcontrol.addEventListener("touchend", e =>{
+    [...e.changedTouches].forEach( touch =>{
+        se[0] = touch.pageX
+        se[1] = touch.pageY
+        decideswipe()
+    })
+})
+mcontrol.addEventListener('touchmove', function(e) {
+    e.preventDefault();
+})
+// swipe for canvas
+canvas.addEventListener("touchstart", e =>{
+    [...e.changedTouches].forEach( touch =>{
+        ss[0] = touch.pageX
+        ss[1] = touch.pageY
+    })
+})
+
+canvas.addEventListener("touchend", e =>{
+    [...e.changedTouches].forEach( touch =>{
+        se[0] = touch.pageX
+        se[1] = touch.pageY
+        decideswipe()
+    })
+})
+canvas.addEventListener('touchmove', function(e) {
+    e.preventDefault();
+})
+function decideswipe(){
+    let startx = ss[0]
+    let starty = ss[1]
+    let endx = se[0]
+    let endy = se[1]
+    let xdir = startx - endx
+    let ydir = starty - endy
+    var teng = null
+    let mxdir = Math.abs(xdir)
+    let mydir = Math.abs(ydir)
+    if(mxdir > mydir){
+        teng = "x"
+    } else if(mydir > mxdir){
+        teng = "y"
+    } else {
+        teng = "no swipe"
+    }
+    if(teng == "x" && xdir < 0){
+        dir = "right"
+    } else if(teng == "x" && xdir > 0){
+        dir = "left"
+    } else if(teng == "y" && ydir > 0){
+        dir = "up"
+    } else if(teng == "y" && ydir < 0){
+        dir = "down"
+    }
+}
+
+function set(){
+    let squares = offset*offset
+    let o = document.getElementById("c1").value
+    let s = document.getElementById("c2").value
+    let f = document.getElementById("c3").value
+    let fc = document.getElementById("c4").value
+    if(!isNaN(o) && o > 0) offset = o
+    if(!isNaN(s) && s > 0) side = s
+    if(!isNaN(f) && f > 0 && f <= 100) fps = f
+    if(!isNaN(s) && fc > 0 && fc <= squares) foodcount = fc
+    canvas.height = side*offset
+    canvas.width = side*offset
+    msg("")
+    setup()
+}
+
+function setup(){
+    paused = true
+    snake = [[0,0],[1,0],[2,0]]
+    length = 3
+    head = length-1
+    dir = "right"
+    dirbef = ""
+    foods = []
+    ftry = 0
+    draw()
+}
+
+function msg(txt){
+    document.getElementById("msg").innerHTML=txt
+    msgdelay(function(){
+        document.getElementById("msg").innerHTML=""
+    }, 3000)
+}
+
+function draw(){
+
+    if(foods.length < foodcount) foodgen()
+
+    if(dir == "up" && snake[snake.length-1][1] < 0){
+        if(cdie){
+            msg("You died. Restarting.")
+            return setup()
+        } else {
+            snake[snake.length-1][1] = offset-1
+        }
+    } else if(dir == "down" && snake[snake.length-1][1] > offset-1){
+        if(cdie){
+            msg("You died. Restarting.")
+            return setup()
+        } else {
+            snake[snake.length-1][1] = 0
+        }
+    } else if(dir == "left" && snake[snake.length-1][0] < 0){
+        if(cdie){
+            msg("You died. Restarting.")
+            return setup()
+        } else {
+            snake[snake.length-1][0] = offset-1
+        }
+    } else if(dir == "right" && snake[snake.length-1][0] > offset-1){
+        if(cdie){
+            msg("You died. Restarting.")
+            return setup()
+        } else {
+            snake[snake.length-1][0] = 0
+        }
+    }
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    let l = 0
+    while(l!=foods.length){
+        ctx.fillStyle = "rgba(250, 100, 100, 1)"
+        let x = foods[l][0]*side
+        let y = foods[l][1]*side
+        ctx.fillRect(x,y,side,side)
+        l++
+    }
+    let i = 0
+    while(i != snake.length){
+        let h = i/snake.length
+        h = 100/h
+        h = 100/h
+        h =h*100
+        ctx.fillStyle=`hsl(120,${h}%,50%)`
+        let x = snake[i][0]*side
+        let y = snake[i][1]*side
+        ctx.fillRect(x,y,side,side)
+        i++
+    }
+    if(headcolor){
+        ctx.fillStyle=`rgba(0, 190, 200, 1)`
+        let x = snake[head][0]*side
+        let y = snake[head][1]*side
+        ctx.fillRect(x,y,side,side)
+    }
+    if(!paused){
+        delay(function(){
+            move()
+        }, 1000/fps)
+    }
+    point()
+    status()
+    
+}
+
+function pause(){
+    if (paused){
+        paused = false
+        move()
+    } else {
+        paused = true
+    }
+    status()
+}
+
+function candie(){
+    if(cdie == false)cdie = true
+    else cdie = false
+    status()
+}
+function hcolor(){
+    if(headcolor == false)headcolor = true
+    else headcolor = false
+}
+function cwin(){
+    if(canwin == false)canwin = true
+    else canwin = false
+    status()
+}
+
+function foodgen(){
+    let i = foods.length
+    var all = offset
+    while(i!= foodcount){
+        let fx = Math.floor(Math.random() * all)
+        let fy = Math.floor(Math.random() * all)
+        let t = [fx,fy]
+        foods.push(t)
+        foodcheck()
+        i++
+    }
+    
+}
+
+function foodcheck(){
+    if(ftry > 10){
+        ftry = 0
+        //msg("Nem lehetett rendesen ételt genrálni.")
+        return
+    }
+    // snake food check
+    for(var i = 0; i < snake.length; i++){
+        for(var j = 0; j < foods.length; j++){
+            if(snake[i][0] == foods[j][0] && snake[i][1] == foods[j][1]){
+                ftry++
+                foods.splice(foods.length-1,1)
+                return foodgen()
+            }
+        }
+    }
+    // food food check
+    for(var i = 0; i < foods.length; i++){
+        for(var j = 0; j < foods.length; j++){
+            if(foods[i][0] == foods[j][0] && foods[i][1] == foods[j][1] && i != j){
+                ftry++
+                foods.splice(foods.length-1,1)
+                return foodgen()
+            }
+        }
+    }
+    ftry = 0
+}
+
+
+function point(){
+    document.getElementById("counter").innerHTML = `Length: ${length}`
+}
+function status(){
+    document.getElementById("state1").innerHTML = `Paused: ${paused}`
+    document.getElementById("state2").innerHTML = `Can die: ${cdie}`
+    document.getElementById("state3").innerHTML = `Can win: ${canwin}`
+}
+
+function move(id){
+    if(cdie){
+        for(var i = 0; i < snake.length; i++){
+            if(snake[i][0] == snake[head][0] && snake[i][1] == snake[head][1] && i != head){
+                msg("You died. Restarting.")
+                return setup()
+            }
+        }
+    }
+
+    let c = offset*offset
+    if(length >= c/2 && canwin)return msg("Congratulations! Your are now very long! You won.")
+
+    if(!paused){
+
+        if(dir == "right"){
+            if(dirbef=="left"){
+                dir="left"
+                return move()
+            }
+            let hx = snake[head][0]
+            let hy = snake[head][1]
+            hx++
+            let nh = [hx,hy]
+            snake.push(nh)
+            snake.splice(0,1)
+            head = snake.length-1
+            dirbef = "right"
+            if(snake.length != length){
+                snake.unshift(snake[0])
+                head = snake.length-1
+            }
+        }
+        if(dir == "left"){
+            if(dirbef=="right"){
+                dir="right"
+                return move()
+            }
+            let hx = snake[head][0]
+            let hy = snake[head][1]
+            hx--
+            let nh = [hx,hy]
+            snake.push(nh)
+            snake.splice(0,1)
+            head = snake.length-1
+            dirbef="left"
+            if(snake.length != length){
+                snake.unshift(snake[0])
+                head = snake.length-1
+            }
+        }
+        if(dir == "up"){
+            if(dirbef=="down"){
+                dir="down"
+                return move()
+            }
+            let hx = snake[head][0]
+            let hy = snake[head][1]
+            hy--
+            let nh = [hx,hy]
+            snake.push(nh)
+            snake.splice(0,1)
+            head = snake.length-1
+            dirbef="up"
+            if(snake.length != length){
+                snake.unshift(snake[0])
+                head = snake.length-1
+            }
+        }
+        if(dir == "down"){
+            if(dirbef=="up"){
+                dir="up"
+                return move()
+            }
+            let hx = snake[head][0]
+            let hy = snake[head][1]
+            hy++
+            let nh = [hx,hy]
+            snake.push(nh)
+            snake.splice(0,1)
+            head = snake.length-1
+            dirbef="down"
+            if(snake.length != length){
+                snake.unshift(snake[0])
+                head = snake.length-1
+            }
+        }
+
+        let k = 0
+        let f = null
+        while(k != foods.length){
+            if(snake[head][0] == foods[k][0] && snake[head][1] == foods[k][1]){
+                length++
+                f = k
+            }
+            k++
+        }
+        
+        if(f != null)foods.splice(f,1)
+        point()
+        draw()
+    }
+}
+
+function KeyPress(e) {
+    var e = window.event ? event : e
+    if (e.keyCode == 37) {
+        dir = "left"
+    } else if(e.keyCode == 39) {
+        dir = "right"
+    } else if(e.keyCode == 38){
+        dir = "up"
+    } else if(e.keyCode == 40){
+        dir = "down"
+    } else if(e.keyCode == 32){
+        pause()
+    }
+}
+document.onkeydown = KeyPress;
+
+function tFS() {
+  var doc = window.document;
+  var docEl = document.documentElement;
+
+  var requestFullScreen =
+    docEl.requestFullscreen ||
+    docEl.mozRequestFullScreen ||
+    docEl.webkitRequestFullScreen ||
+    docEl.msRequestFullscreen;
+  var cancelFullScreen =
+    doc.exitFullscreen ||
+    doc.mozCancelFullScreen ||
+    doc.webkitExitFullscreen ||
+    doc.msExitFullscreen;
+
+  if (
+    !doc.fullscreenElement &&
+    !doc.mozFullScreenElement &&
+    !doc.webkitFullscreenElement &&
+    !doc.msFullscreenElement
+  ) {
+    requestFullScreen.call(docEl);
+  } else {
+    cancelFullScreen.call(doc);
+  }
+
+}
+</script>
