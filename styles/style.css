@@ -1,5 +1,9 @@
+:root{
+    --bgcolor: #eef;
+}
+
 body{
-    background-color: #eef;
+    background-color: var(--bgcolor);
     font-family: 'Courier New', Courier, monospace;
     color: #004;
 }
@@ -35,7 +39,7 @@ footer{
     flex-direction: row;
     gap: 2em;
     overflow: auto;
-    padding-bottom: 1em;
+    padding: 1em 0;
 }
 
 .card{
@@ -43,6 +47,7 @@ footer{
     min-width: 10vw;
     width: fit-content;
     border: 2px solid #44a;
+    position: relative;
 }
 
 .card-img{
@@ -58,4 +63,19 @@ h6{
     margin-top: -1.3rem;
     font-size: 0.8rem;
     text-indent: 0.5rem;
+}
+
+.arrow {
+  background: linear-gradient(to left, transparent, var(--bgcolor) 75%);
+  border: none;
+  font-size: 20px;
+  position: absolute;
+  left: 0;
+  z-index: 10;
+  width: 5vw;
+  
+}
+.right{
+    left: calc(100% - 5vw);
+    background: linear-gradient(to right, transparent, var(--bgcolor) 75%);
 }
