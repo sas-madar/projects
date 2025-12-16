@@ -34,11 +34,13 @@ footer{
     display: flex;
     flex-direction: row;
     gap: 2em;
+    overflow: auto;
+    padding-bottom: 1em;
 }
 
 .card{
     padding: 0;
-   /*  min-width: 10vw; */
+    min-width: 10vw;
     width: fit-content;
     border: 2px solid #44a;
 }
@@ -49,5 +51,11 @@ footer{
 .card-title{
     text-align: center;
     font-weight: bold;
-    font-size: 1.5rem;
+    font-size: 1.3rem;
+}
+
+h6{
+    margin-top: -1.3rem;
+    font-size: 0.8rem;
+    text-indent: 0.5rem;
 }
