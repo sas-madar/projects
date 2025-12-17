@@ -1,0 +1,87 @@
+:root{
+    --bgcolor: #eef;
+}
+
+body{
+    background-color: var(--bgcolor);
+    font-family: 'Courier New', Courier, monospace;
+    color: #004;
+    overflow: visible;
+}
+main{
+    overflow: scroll;
+    max-height: calc(100vh - 2rem);
+}
+
+h1{
+    width: 100%;
+    text-align: center;
+    color: #44a;
+}
+
+a{
+    color: #66a;
+}
+a:hover{
+    color: #44a;
+    text-decoration: none;
+}
+
+footer{
+    font-weight: bold;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: calc(100vw - 2rem);
+    height: 1rem;
+    margin: 0;
+    padding: 0.5rem;
+    text-align: center;
+    background-color: #eee;
+}
+
+.card-holder{
+    display: flex;
+    flex-direction: row;
+    gap: 2em;
+    overflow: auto;
+    padding: 1em 0;
+}
+
+.card{
+    padding: 0;
+    min-width: 10vw;
+    width: fit-content;
+    border: 2px solid #44a;
+    position: relative;
+}
+
+.card-img{
+    max-width: 20vw;
+}
+.card-title{
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.3rem;
+}
+
+h6{
+    margin-top: -1.3rem;
+    font-size: 0.8rem;
+    text-indent: 0.5rem;
+}
+
+.arrow {
+  background: linear-gradient(to left, transparent, var(--bgcolor) 75%);
+  border: none;
+  font-size: 20px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 10;
+  width: 5vw;
+}
+.right{
+    left: calc(100% - 5vw);
+    background: linear-gradient(to right, transparent, var(--bgcolor) 75%);
+}
