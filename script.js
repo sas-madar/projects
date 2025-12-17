@@ -14,7 +14,7 @@ function updateArrows() {
     
     arrows.forEach(arr => {
         console.log(arr)
-        arr.style.height = `${content.clientHeight}px`
+        arr.style.height = `calc(${content.clientHeight}px - 1em)`
     });
     
 }
