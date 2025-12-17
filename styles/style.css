@@ -46,7 +46,9 @@ footer{
     gap: 2em;
     overflow: auto;
     padding: 1em 0;
+    scroll-behavior: smooth;
 }
+
 
 .card{
     padding: 0;
@@ -80,6 +82,7 @@ h6{
   top: 0;
   z-index: 10;
   width: 5vw;
+  cursor: pointer;
 }
 .right{
     left: calc(100% - 5vw);
