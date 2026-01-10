@@ -20,7 +20,7 @@
 <input id="c4" placeholder="foodcount (default 3)" type="number"><br>
 <button onclick="set()">Restart with given values</button>
 </div>
-<p id="wincond">You win when the length of the snake is at least half of the squares you can land on.</p>
+<p id="wincond">You win when the length of the snake is equal to the number of squares.</p>
 <div id="swipe"><p id="smsg">Swipe here for mobile control.</p></div>
 </div>
 
@@ -78,8 +78,8 @@ canvas{
 
 <script>
 var canwin = true
-var cdie = false
-var headcolor = false
+var cdie = true
+var headcolor = true
 var side = 30
 var offset = 10
 var paused = true
@@ -375,7 +375,7 @@ function move(id){
     }
 
     let c = offset*offset
-    if(length >= c/2 && canwin)return msg("Congratulations! Your are now very long! You won.")
+    if(length >= c && canwin)return msg("Congratulations! Your are now very long! You won.")
 
     if(!paused){
 
