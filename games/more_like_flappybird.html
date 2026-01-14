@@ -41,6 +41,7 @@ var ticks = 100
 var score = 0
 var canvas = document.getElementById("canvas")
 var ctx = canvas.getContext("2d")
+ctx.lineWidth = 2
 canvas.height = canvHeight
 canvas.width = canvWidth
 var obstacles = []
@@ -166,6 +167,7 @@ function bird(x,y,radius){
         ctx.arc(this.x,this.y, this.radius, 0, 2*Math.PI)
         ctx.fill();
         ctx.stroke()
+        ctx.closePath()
     }
     this.fly = function(value){
         this.dir = value || 0
@@ -176,27 +178,27 @@ function bird(x,y,radius){
 
     this.check = function(){
         for(var i = 0; i < obstacles.length; i++){
-            /* this.obsx = obstacles[i][0][0]
-            this.obsw = obstacles[i][0][2]
-            this.gapstart = obstacles[i][0][3]
-            this.gapend = obstacles[i][1][1] */
-            if(i = 0){
-
-                ctx.strokeStyle = "black"
-                ctx.beginPath()
-                this.topLeft = [obstacles[i][0][0], obstacles[i][0][1]]
+            if(i == 0){
+                this.topLeft = [obstacles[i][0][0], obstacles[i][0][3]]
+                this.topRight = [obstacles[i][0][0] + obstacles[i][0][2], obstacles[i][0][3]]
                 this.bottomLeft = [obstacles[i][1][0], obstacles[i][1][1]]
+                this.bottomRight = [obstacles[i][1][0] + obstacles[i][1][2], obstacles[i][1][1]]
                 
-                this.topDist = ((this.topLeft[0] - this.x)**2 + (this.topLeft[1] - this.y)**2  )**(1/2)
-                this.bottomDist = ((this.bottomLeft[0] - this.x)**2 + (this.bottomLeft[1] - this.y)**2  )**(1/2)
-                console.log(topDist, bottomDist)
-                ctx.arc(this.topLeft[0], this.topLeft[1], topDist, 0, Math.PI*2)
-                ctx.arc(this.bottomLeft[0], this.bottomLeft[1], bottomDist, 0, Math.PI*2)
-                ctx.stroke()
-            }
+                console.log(`TOP LEFT: x = ${this.topLeft[0]} ; y = ${this.topLeft[1]}`)
+                console.log(`TOP RIGHT: x = ${this.topRight[0]} ; y = ${this.topRight[1]}`)
+                console.log(`BOTTOM LEFT: x = ${this.bottomLeft[0]} ; y = ${this.bottomLeft[1]}`)
+                console.log(`BOTTOM RIGHT: x = ${this.bottomRight[0]} ; y = ${this.bottomRight[1]}`)
+                console.log(`BIRD: x = ${this.x} ; y = ${this.y}`)
 
-            //if(topDist < this.radius ||bottomDist < this.radius)died()
-            //if(this.x+this.width > this.obsx && this.birdbottom > this.gapend && this.x < this.obsx+this.obsw)died()
+                this.topLeftDist = ((this.topLeft[0] - this.x)**2 + (this.topLeft[1] - this.y)**2 )**(1/2)
+                this.topRightDist = ((this.topRight[0] - this.x)**2 + (this.topRight[1] - this.y)**2 )**(1/2)
+                this.bottomLeftDist = ((this.bottomLeft[0] - this.x)**2 + (this.bottomLeft[1] - this.y)**2 )**(1/2)
+                this.bottomRightDist = ((this.bottomRight[0] - this.x)**2 + (this.bottomRight[1] - this.y)**2 )**(1/2)
+                console.log(this.topLeftDist, this.topRightDist, this.bottomLeftDist, this.bottomRightDist)
+                
+                if(this.topLeftDist < this.radius || this.bottomLeftDist < this.radius || this.topRightDist < this.radius ||this.bottomRightDist < this.radius)died()
+                if((this.x+this.radius > this.topLeft[0] && this.y - this.radius > this.bottomLeft[1] && this.x - this.radius < this.topRight[0]) || (this.x+this.radius > this.topLeft[0] && this.y + this.radius < this.topLeft[1] && this.x - this.radius < this.topRight[0]))died()
+            }
         }
     }
 }
