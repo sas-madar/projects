@@ -42,7 +42,6 @@
 
 <script>
 var die = false
-var press = false
 var running = false
 var canvWidth = 600
 var canvHeight = 300
@@ -57,6 +56,7 @@ var obstacles = []
 var maxobs = 3
 var flappy = new bird()
 var obsta = new obs()
+var dieTime = Date.now()
 flappy.show()
 obsta.create()
 obsta.update()
@@ -84,6 +84,7 @@ function pause(){
 function died(){
     pause()
     die = true
+    dieTime = Date.now()
     canvas.style.cursor = "pointer"
     ctx.closePath()
     ctx.beginPath()
@@ -117,7 +118,6 @@ function restart(){
 }
 
 function tick(){tickdelay(function(){if(running){
-    if(press)flappy.flap()
     flappy.update()
     obsta.update()
     document.getElementById("score").innerHTML = `Score: ${score}`
@@ -233,27 +233,25 @@ function bird(x,y,radius){
         this.bottomRightDist = ((this.bottomRight[0] - this.x)**2 + (this.bottomRight[1] - this.y)**2 )**(1/2)
         //console.log(this.topLeftDist, this.topRightDist, this.bottomLeftDist, this.bottomRightDist)
         
-        if(this.topLeftDist < this.radius || this.bottomLeftDist < this.radius || this.topRightDist < this.radius ||this.bottomRightDist < this.radius){died(); return;}
+        if(this.topLeftDist < this.radius -2 || this.bottomLeftDist < this.radius -2 || this.topRightDist < this.radius -2 ||this.bottomRightDist < this.radius -2){died(); return;}
         if((this.x+this.radius > this.topLeft[0] && this.y - this.radius > this.bottomLeft[1] && this.x - this.radius < this.topRight[0]) || (this.x+this.radius > this.topLeft[0] && this.y + this.radius < this.topLeft[1] && this.x - this.radius < this.topRight[0])){died(); return;}
     }
 }
 
-canvas.addEventListener("click", ()=>{
-    if(die){
+canvas.addEventListener("mouseup", ()=>{
+    if(die && dieTime + 1000 < Date.now()){
         restart()
+    } else {
+        flappy.flap()
     }
 })
 
-document.addEventListener("keydown", e => {
-    var code = e.keyCode
-    if(code == 32){
-        press = true
-    }
-})
 document.addEventListener("keyup", e => {
     var code = e.keyCode
     if(code == 32){
-        press = false
+        flappy.flap()
+    } else if (code == 27){
+        pause();
     }
 })
 /* canvas.addEventListener("mousedown", e => {
@@ -262,14 +260,10 @@ document.addEventListener("keyup", e => {
 canvas.addEventListener("mouseup", e => {
     press = false
 }) */
-canvas.addEventListener("touchstart", e => {
+/* canvas.addEventListener("touch", e => {
     e.preventDefault()
-    press = true
-})
-canvas.addEventListener("touchend", e => {
-    e.preventDefault()
-    press = false
-})
+    flappy.flap()
+}) */
 </script>
 </body>
 </html>
