@@ -214,7 +214,7 @@ function bird(x,y,radius){
         if(this.y+this.radius > canvHeight){this.y = canvHeight-this.radius;}
         if(this.y - this.radius < -1 )this.y = this.radius -1
 
-        document.getElementById("debug").innerText = `Accel: ${this.accel} \n y = ${this.y}`
+        //document.getElementById("debug").innerText = `Accel: ${this.accel} \n y = ${this.y}`
     }
 
     this.check = function(){
