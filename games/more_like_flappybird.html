@@ -164,7 +164,6 @@ function obs(){
 
     this.move = function(){
         for(var i = 0; i < obstacles.length; i++){
-
             obstacles[i][0][0]--
             obstacles[i][1][0]--
         }
@@ -189,12 +188,15 @@ function bird(x,y,radius){
     this.x = x || canvWidth*0.1
     this.y = y || canvHeight/2
     this.accel = 0
+    this.died = false
 
     this.update = function(){
-        this.show()
         this.fly()
         this.check()
+        this.show()
+        if(this.died) died()
     }
+
     this.show = function(){
         ctx.clearRect(0,0,canvWidth,canvHeight)
         ctx.beginPath()
@@ -234,30 +236,35 @@ function bird(x,y,radius){
         this.bottomLeftDist = ((this.bottomLeft[0] - this.x)**2 + (this.bottomLeft[1] - this.y)**2 )**(1/2)
         this.bottomRightDist = ((this.bottomRight[0] - this.x)**2 + (this.bottomRight[1] - this.y)**2 )**(1/2)
         
-        if(this.topLeftDist < this.radius -2 || this.bottomLeftDist < this.radius -2 || this.topRightDist < this.radius -2 ||this.bottomRightDist < this.radius -2){died(); return;}
-        if((this.x+this.radius > this.topLeft[0] && this.y - this.radius > this.bottomLeft[1] && this.x - this.radius < this.topRight[0]) || (this.x+this.radius > this.topLeft[0] && this.y + this.radius < this.topLeft[1] && this.x - this.radius < this.topRight[0])){died(); return;}
+        if(this.topLeftDist < this.radius -2 || this.bottomLeftDist < this.radius -2 || this.topRightDist < this.radius -2 ||this.bottomRightDist < this.radius -2){this.died = true; return;}
+        if((this.x+this.radius > this.topLeft[0] && this.y - this.radius > this.bottomLeft[1] && this.x - this.radius < this.topRight[0]) || (this.x+this.radius > this.topLeft[0] && this.y + this.radius < this.topLeft[1] && this.x - this.radius < this.topRight[0])){this.died = true; return;}
     }
 }
 
 let press = false
 
-canvas.addEventListener("mouseup", ()=>{
+canvas.addEventListener("mousedown", ()=>{
     if(die && dieTime + 1000 < Date.now()){
         restart()
-    } else if(!running){
+    } else if(!running && !die && !press){
         pause()
         flappy.flap()
-    } else {
+    } else if(!press) {
         flappy.flap()
+        press = true
     }
+})
+canvas.addEventListener("mouseup", ()=>{
+    press = false
 })
 
 document.addEventListener("keydown", e => {
     var code = e.keyCode
     if(code == 32 && die && dieTime + 1000 < Date.now()){
         restart()
-    } if(code == 32 && !running && !die){
+    } if(code == 32 && !running && !die && !press){
         pause()
+        flappy.flap()
     } else if(code == 32 && !press){
         flappy.flap()
         press = true
