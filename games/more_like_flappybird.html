@@ -38,6 +38,7 @@
 <body>
 <div onclick="pause()" id="pauseBTN">Start/Pause</div>
 <p id="score">Score: 0</p><br>
+<p id="debug"></p>
 <canvas id="canvas"></canvas>
 
 <script>
@@ -85,6 +86,7 @@ function died(){
     pause()
     die = true
     dieTime = Date.now()
+    obsta.show(true)
     canvas.style.cursor = "pointer"
     ctx.closePath()
     ctx.beginPath()
@@ -168,8 +170,8 @@ function obs(){
         }
     }
 
-    this.show = function(){
-        if(!die){
+    this.show = function(override = false){
+        if(!die || override){
             for(var i = 0; i < obstacles.length; i++){
                 ctx.fillStyle = `rgba(0,200,0,1)`
                 ctx.fillRect(obstacles[i][0][0], obstacles[i][0][1], obstacles[i][0][2], obstacles[i][0][3])
@@ -189,11 +191,9 @@ function bird(x,y,radius){
     this.accel = 0
 
     this.update = function(){
+        this.show()
         this.fly()
         this.check()
-        if(!die){
-            this.show()
-        }
     }
     this.show = function(){
         ctx.clearRect(0,0,canvWidth,canvHeight)
@@ -205,14 +205,16 @@ function bird(x,y,radius){
         ctx.closePath()
     }
     this.flap = function(){
-        if(this.accel < -1) this.accel+=10
+        if(this.accel < 1) this.accel = 6
     }
     this.fly = function(){
         this.y = this.y-this.accel
         this.accel -= .5
-        if(this.accel < -4) this.accel = -4
-        if(this.y+this.radius > canvHeight)this.y = canvHeight-this.radius
+        if(this.accel < -10) this.accel = -10
+        if(this.y+this.radius > canvHeight){this.y = canvHeight-this.radius;}
         if(this.y - this.radius < -1 )this.y = this.radius -1
+
+        document.getElementById("debug").innerText = `Accel: ${this.accel} \n y = ${this.y}`
     }
 
     this.check = function(){
@@ -231,35 +233,46 @@ function bird(x,y,radius){
         this.topRightDist = ((this.topRight[0] - this.x)**2 + (this.topRight[1] - this.y)**2 )**(1/2)
         this.bottomLeftDist = ((this.bottomLeft[0] - this.x)**2 + (this.bottomLeft[1] - this.y)**2 )**(1/2)
         this.bottomRightDist = ((this.bottomRight[0] - this.x)**2 + (this.bottomRight[1] - this.y)**2 )**(1/2)
-        //console.log(this.topLeftDist, this.topRightDist, this.bottomLeftDist, this.bottomRightDist)
         
         if(this.topLeftDist < this.radius -2 || this.bottomLeftDist < this.radius -2 || this.topRightDist < this.radius -2 ||this.bottomRightDist < this.radius -2){died(); return;}
         if((this.x+this.radius > this.topLeft[0] && this.y - this.radius > this.bottomLeft[1] && this.x - this.radius < this.topRight[0]) || (this.x+this.radius > this.topLeft[0] && this.y + this.radius < this.topLeft[1] && this.x - this.radius < this.topRight[0])){died(); return;}
     }
 }
 
+let press = false
+
 canvas.addEventListener("mouseup", ()=>{
     if(die && dieTime + 1000 < Date.now()){
         restart()
+    } else if(!running){
+        pause()
+        flappy.flap()
     } else {
         flappy.flap()
+    }
+})
+
+document.addEventListener("keydown", e => {
+    var code = e.keyCode
+    if(code == 32 && die && dieTime + 1000 < Date.now()){
+        restart()
+    } if(code == 32 && !running && !die){
+        pause()
+    } else if(code == 32 && !press){
+        flappy.flap()
+        press = true
+    } else if (code == 27){
+        pause();
     }
 })
 
 document.addEventListener("keyup", e => {
     var code = e.keyCode
     if(code == 32){
-        flappy.flap()
-    } else if (code == 27){
-        pause();
+        press = false
     }
 })
-/* canvas.addEventListener("mousedown", e => {
-    press = true
-})
-canvas.addEventListener("mouseup", e => {
-    press = false
-}) */
+
 /* canvas.addEventListener("touch", e => {
     e.preventDefault()
     flappy.flap()
