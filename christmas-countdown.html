@@ -1,0 +1,50 @@
+<!--
+
+--------------------    
+    NEM MŰKÖDIK
+--------------------
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Christmas Countdown</title>
+    <style>
+        #main{
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+        }
+    </style>
+    <script>
+        var countdown = document.getElementById("timer")
+        var looped = true
+        var time
+        var now
+        var til
+		gettime()
+
+        function gettime(){
+            date = new Date
+			date = date.getTime()
+            var sec = Math.round(date / 1000)
+            var min =Math.round( sec / 60)
+            var hr = Math.round(min / 60)
+            var day = Math.round(hr / 24)
+            now = [day, hr, min, sec]
+            til = [19714-now[0], 473159-now[1], 28389542-now[2], 170337250-now[3]]
+            setTimeout(function(){
+				gettime()
+			}, 1000)
+		}
+    </script>
+</head>
+<body>
+    <div id="main" width="100%">
+            <h3>Idő karácsonyig</h3>
+            <h2 id="timer">TIME</h2>
+    </div>
+</body>
+</html> -->
