@@ -1,0 +1,53 @@
+body{
+    display: flex;
+    flex-direction: row;
+}
+#cards{
+    perspective: 1000vw;
+    display: grid;
+    gap: 1vh;
+    width: min-content;
+    margin: auto;
+    grid-template-columns: auto;
+}
+.open{
+    transform: rotateY(-180deg);
+}
+.fix{
+    transform: rotateY(-180deg);
+    cursor: default !important;
+}
+.fix > *{
+    opacity: 0;
+}
+.fix > *:last-child{
+    transition: opacity 0.5s 0.5s;
+}
+.fix > *:first-child{
+    transition: opacity 0.1s 0.5s;
+}
+.card{
+    cursor: pointer;
+    /* width: 100px; */
+    height: max-content;
+    aspect-ratio: 363/585;
+    transition: transform 0.5s;
+    transform-style: preserve-3d;
+}
+.card > *{
+    backface-visibility: hidden;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+.card > *:last-child{
+    transform: rotateY(180deg);
+}
+
+table{
+    border-collapse: collapse;
+}
+td, th{
+    padding: 4px 8px;
+    border: 1px solid black;
+}

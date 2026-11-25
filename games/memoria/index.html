@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memóriajáték</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="./script.js" defer></script>
+</head>
+<body>
+    <div id="stuff">
+        <pre style="display: none;">
+        ajánlat: magyar kártya: 32db különböző!
+        max 8x8 grid! -> 64
+        választható 6x6, 4x4 szóval legyen select, random választ a 32 kártyából megfelelőt
+        számoljuk hány választásból sikerült + időt -> ranglista (top3 elég)
+
+        // teszteredmények:
+        {"2x2":[{"nev":null,"forditas":6,"ido":2757},{"nev":"sas most tényleg","forditas":6,"ido":2675},{"nev":"ezvan","forditas":8,"ido":4276}],"4x4":[{"nev":"sas","forditas":2,"ido":11111},{"nev":"sas","forditas":2,"ido":22222},{"nev":"sas","forditas":1,"ido":11111},{"nev":"sas","forditas":3,"ido":666666}],"6x6":[{"nev":"sas","forditas":2,"ido":11111},{"nev":"sas","forditas":1,"ido":11111},{"nev":"sas","forditas":3,"ido":11111},{"nev":"sas","forditas":3,"ido":666666},{"nev":"sas","forditas":3,"ido":55555}],"8x8":[{"nev":"sas","forditas":4,"ido":11111},{"nev":"sas","forditas":2,"ido":11111},{"nev":"sas","forditas":3,"ido":55555},{"nev":"sas","forditas":1,"ido":55555}]}
+        </pre>
+        <p>
+            This was made for a school project. It is in hungarian.
+        </p>
+        <select id="size">
+            <option value="2">2x2</option>
+            <option value="4">4x4</option>
+            <option value="6" selected>6x6</option>
+            <option value="8">8x8</option>
+        </select>
+        <button onclick="reset(this)">Indítás</button>
+        <br>
+        <p id="timer">00:00.000</p>
+        <p><span id="tries">0</span> fordítás</p>
+        <div id="tops">
+            <button disabled onclick="save(this)" id="saveBtn">Eredmény mentése</button>
+            <table>
+            </table>
+        </div>
+        <button onclick="exportTop()">Eredmények exportálása</button>
+        <button onclick="importTop()">Eredmények importálása</button>
+    </div>
+
+<div id="cards">
+
+</div>
+
+
+</body>
+</html>
